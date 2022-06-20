@@ -7,4 +7,3 @@ COPY . .
 RUN go build
 
 CMD ./user-auth
-
