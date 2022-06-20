@@ -18,4 +18,6 @@ func main() {
 	if dbErr != nil {
 		panic(dbErr)
 	}
+
+	infra.RunMigrations(infra.DB, &infra.Configs)
 }
