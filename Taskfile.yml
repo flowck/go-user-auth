@@ -1,0 +1,39 @@
+version: '3'
+
+env:
+  ENV: test
+
+dotenv: ['.env', '{{.ENV}}/.env.', '{{.HOME}}/.env']
+
+tasks:
+  run:dev:
+    cmds:
+      - reflex -r '\.go' -s -- sh -c 'go run main.go'
+
+  build:
+    cmds:
+      - go build ./
+
+  goose:
+    cmds:
+      - goose
+
+  goose:down:
+    cmds:
+      - goose -dir ./sql down
+
+  goose:up:
+    cmds:
+      - goose -dir ./sql up
+
+  docker:up:
+    cmds:
+      - docker-compose up -d
+
+  docker:down:
+    cmds:
+      - docker-compose down
+
+  sqlboiler:
+    cmds:
+      - sqlboiler psql
