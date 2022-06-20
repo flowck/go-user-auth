@@ -8,6 +8,7 @@ import (
 type Config struct {
 	DbDriver string `envconfig:"DB_DRIVER"`
 	DbUrl    string `envconfig:"DB_URL"`
+	Port     int16  `envconfig:"PORT"`
 }
 
 var Configs Config

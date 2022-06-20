@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"user-auth/infra"
 )
 
@@ -19,5 +20,16 @@ func main() {
 		panic(dbErr)
 	}
 
-	infra.RunMigrations(infra.DB, &infra.Configs)
+	err := infra.RunMigrations(infra.DB, &infra.Configs)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Server is running at port", infra.Configs.Port)
+	err = http.ListenAndServe(fmt.Sprintf(":%s", strconv.Itoa(int(infra.Configs.Port))), nil)
+
+	if err != nil {
+		panic(err)
+	}
 }
