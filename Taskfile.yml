@@ -16,7 +16,7 @@ tasks:
 
   goose:
     cmds:
-      - goose
+      - goose -dir ./sql create {{.CLI_ARGS}} sql
 
   goose:down:
     cmds:

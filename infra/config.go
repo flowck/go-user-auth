@@ -13,12 +13,12 @@ type Config struct {
 	Environment string `envconfig:"AUTH_SERVICE_ENV"`
 }
 
-var Configs Config
+var Configs *Config
 
 func init() {
-	Configs = Config{}
-
-	err := envconfig.Process("", &Configs)
+	Configs = &Config{}
+	
+	err := envconfig.Process("", Configs)
 
 	if err != nil {
 		panic(err)

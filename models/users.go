@@ -32,6 +32,7 @@ type User struct {
 	PasswordResetTokenExpiryDate null.Time   `boil:"password_reset_token_expiry_date" json:"password_reset_token_expiry_date,omitempty" toml:"password_reset_token_expiry_date" yaml:"password_reset_token_expiry_date,omitempty"`
 	CreateAt                     time.Time   `boil:"create_at" json:"create_at" toml:"create_at" yaml:"create_at"`
 	UpdateAt                     time.Time   `boil:"update_at" json:"update_at" toml:"update_at" yaml:"update_at"`
+	Email                        string      `boil:"email" json:"email" toml:"email" yaml:"email"`
 
 	R *userR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L userL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -46,6 +47,7 @@ var UserColumns = struct {
 	PasswordResetTokenExpiryDate string
 	CreateAt                     string
 	UpdateAt                     string
+	Email                        string
 }{
 	ID:                           "id",
 	FirstName:                    "first_name",
@@ -55,6 +57,7 @@ var UserColumns = struct {
 	PasswordResetTokenExpiryDate: "password_reset_token_expiry_date",
 	CreateAt:                     "create_at",
 	UpdateAt:                     "update_at",
+	Email:                        "email",
 }
 
 var UserTableColumns = struct {
@@ -66,6 +69,7 @@ var UserTableColumns = struct {
 	PasswordResetTokenExpiryDate string
 	CreateAt                     string
 	UpdateAt                     string
+	Email                        string
 }{
 	ID:                           "users.id",
 	FirstName:                    "users.first_name",
@@ -75,6 +79,7 @@ var UserTableColumns = struct {
 	PasswordResetTokenExpiryDate: "users.password_reset_token_expiry_date",
 	CreateAt:                     "users.create_at",
 	UpdateAt:                     "users.update_at",
+	Email:                        "users.email",
 }
 
 // Generated where
@@ -136,6 +141,7 @@ var UserWhere = struct {
 	PasswordResetTokenExpiryDate whereHelpernull_Time
 	CreateAt                     whereHelpertime_Time
 	UpdateAt                     whereHelpertime_Time
+	Email                        whereHelperstring
 }{
 	ID:                           whereHelperstring{field: "\"users\".\"id\""},
 	FirstName:                    whereHelperstring{field: "\"users\".\"first_name\""},
@@ -145,6 +151,7 @@ var UserWhere = struct {
 	PasswordResetTokenExpiryDate: whereHelpernull_Time{field: "\"users\".\"password_reset_token_expiry_date\""},
 	CreateAt:                     whereHelpertime_Time{field: "\"users\".\"create_at\""},
 	UpdateAt:                     whereHelpertime_Time{field: "\"users\".\"update_at\""},
+	Email:                        whereHelperstring{field: "\"users\".\"email\""},
 }
 
 // UserRels is where relationship names are stored.
@@ -164,8 +171,8 @@ func (*userR) NewStruct() *userR {
 type userL struct{}
 
 var (
-	userAllColumns            = []string{"id", "first_name", "last_name", "password", "password_reset_token", "password_reset_token_expiry_date", "create_at", "update_at"}
-	userColumnsWithoutDefault = []string{"first_name", "last_name", "password"}
+	userAllColumns            = []string{"id", "first_name", "last_name", "password", "password_reset_token", "password_reset_token_expiry_date", "create_at", "update_at", "email"}
+	userColumnsWithoutDefault = []string{"first_name", "last_name", "password", "email"}
 	userColumnsWithDefault    = []string{"id", "password_reset_token", "password_reset_token_expiry_date", "create_at", "update_at"}
 	userPrimaryKeyColumns     = []string{"id"}
 	userGeneratedColumns      = []string{}
