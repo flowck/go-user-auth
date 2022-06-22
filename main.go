@@ -6,7 +6,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 	"user-auth/infra"
@@ -21,8 +20,7 @@ func NewMessageResponse(message string) []byte {
 	response, err := json.Marshal(MessageResponse{Message: message})
 
 	if err != nil {
-		log.Fatal(err)
-		return nil
+		panic(err)
 	}
 
 	return response
@@ -34,19 +32,17 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
-		log.Fatal(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(NewMessageResponse("Internal Server Error"))
-		return
+		panic(err)
 	}
 
 	err = json.Unmarshal(body, &signUpDto)
 
 	if err != nil {
-		log.Fatal(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(NewMessageResponse("Please provide a valid JSON"))
-		return
+		panic(err)
 	}
 
 	err = user.Signup(ctx, signUpDto)
@@ -62,6 +58,49 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(NewMessageResponse("User create successfully"))
 }
 
+func signInHandler(w http.ResponseWriter, r *http.Request) {
+	var signInDto user.SigninUserDto
+
+	body, err := ioutil.ReadAll(r.Body)
+
+	fmt.Println(body)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(NewMessageResponse("Internal Server Error"))
+		return
+	}
+
+	err = json.Unmarshal(body, &signInDto)
+
+	fmt.Println(signInDto)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(NewMessageResponse("Please provide a valid JSON"))
+		return
+	}
+
+	var auth user.AuthUser
+	auth, err = user.SignIn(r.Context(), signInDto)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(NewMessageResponse(err.Error()))
+		return
+	}
+
+	response, _ := json.Marshal(auth)
+
+	fmt.Println("Auth", auth)
+	fmt.Println("Res", response)
+
+	/*if err != nil {
+		log.Println(err)
+	}*/
+
+	w.Write(response)
+}
+
 func GlobalMiddleware(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -70,8 +109,6 @@ func GlobalMiddleware(handler http.Handler) http.Handler {
 }
 
 func main() {
-	fmt.Println("Service will start here")
-
 	dbErr := infra.InitDatabase(infra.Configs)
 
 	if dbErr != nil {
@@ -90,6 +127,7 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Route("/auth", func(r chi.Router) {
 		r.Post("/signup", signUpHandler)
+		r.Post("/signin", signInHandler)
 	})
 
 	fmt.Println("Server is running at port", infra.Configs.Port)

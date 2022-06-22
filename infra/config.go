@@ -7,17 +7,18 @@ import (
 )
 
 type Config struct {
-	DbDriver    string `envconfig:"DB_DRIVER"`
-	DbUrl       string `envconfig:"DB_URL"`
-	Port        int16  `envconfig:"PORT"`
-	Environment string `envconfig:"AUTH_SERVICE_ENV"`
+	DbDriver      string `envconfig:"DB_DRIVER"`
+	DbUrl         string `envconfig:"DB_URL"`
+	Port          int16  `envconfig:"PORT"`
+	Environment   string `envconfig:"AUTH_SERVICE_ENV"`
+	JwtSigningKey []byte `envconfig:"JWT_SIGNING_SECRET"`
 }
 
 var Configs *Config
 
 func init() {
 	Configs = &Config{}
-	
+
 	err := envconfig.Process("", Configs)
 
 	if err != nil {
