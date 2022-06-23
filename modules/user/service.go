@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"fmt"
 	"github.com/friendsofgo/errors"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -15,30 +14,30 @@ import (
 )
 
 type SignupUserDto struct {
-	email    string `json:"email"`
-	password string `json:"password"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type SigninUserDto struct {
-	email    string `json:"email"`
-	password string `json:"password"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type AuthUser struct {
-	token string `json:"token"`
+	Token string `json:"token"`
 }
 
 func Signup(ctx context.Context, user SignupUserDto) error {
 
 	// User exists?
-	exists, _ := models.Users(qm.Where("email = ? ", user.email)).One(ctx, infra.DB)
+	exists, _ := models.Users(qm.Where("email = ?", user.Email)).One(ctx, infra.DB)
 
 	if exists != nil {
 		return errors.New("User already exists.")
 	}
 
 	// Hash user's password
-	password, err := bcrypt.GenerateFromPassword([]byte(user.password), bcrypt.DefaultCost)
+	password, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 
 	if err != nil {
 		log.Fatal(err)
@@ -46,7 +45,7 @@ func Signup(ctx context.Context, user SignupUserDto) error {
 	}
 
 	newUser := models.User{
-		Email:    user.email,
+		Email:    user.Email,
 		Password: string(password),
 	}
 
@@ -61,25 +60,20 @@ func Signup(ctx context.Context, user SignupUserDto) error {
 }
 
 func SignIn(ctx context.Context, user SigninUserDto) (AuthUser, error) {
-
-	fmt.Println("User email", user.email)
-
-	if user.email == "" || user.password == "" {
+	if user.Email == "" || user.Password == "" {
 		return AuthUser{}, errors.New("Please provide valid details.")
 	}
 
 	// find user
-	foundUser, err := models.Users(qm.Where("email = ?", user.email)).One(ctx, infra.DB)
+	foundUser, err := models.Users(qm.Where("email = ?", user.Email)).One(ctx, infra.DB)
 
 	if err != nil {
 		log.Println(err)
-		return AuthUser{}, errors.New("Unable to perform this operation")
+		return AuthUser{}, errors.New("Unable to find user")
 	}
 
-	fmt.Println("User", foundUser)
-
 	// compare passwords
-	err = bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(user.password))
+	err = bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(user.Password))
 
 	if err != nil {
 		return AuthUser{}, errors.New("Please provide the valid password for this account.")
@@ -95,5 +89,5 @@ func SignIn(ctx context.Context, user SigninUserDto) (AuthUser, error) {
 	var token string
 	token, err = jwtToken.SignedString(infra.Configs.JwtSigningKey)
 
-	return AuthUser{token: token}, nil
+	return AuthUser{Token: token}, nil
 }
