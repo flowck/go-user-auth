@@ -7,11 +7,12 @@ import (
 )
 
 type Config struct {
-	DbDriver      string `envconfig:"DB_DRIVER"`
-	DbUrl         string `envconfig:"DB_URL"`
-	Port          int16  `envconfig:"PORT"`
-	Environment   string `envconfig:"AUTH_SERVICE_ENV"`
-	JwtSigningKey []byte `envconfig:"JWT_SIGNING_SECRET"`
+	DbDriver                  string `envconfig:"DB_DRIVER"`
+	DbUrl                     string `envconfig:"DB_URL"`
+	Port                      int16  `envconfig:"PORT"`
+	Environment               string `envconfig:"AUTH_SERVICE_ENV"`
+	JwtSigningKey             []byte `envconfig:"JWT_SIGNING_SECRET"`
+	MaxRequestsPerMinutePerIp int    `envconfig:"MAX_REQUESTS_PER_MINUTE_PER_IP"`
 }
 
 var Configs *Config
@@ -23,7 +24,6 @@ func init() {
 
 	if err != nil {
 		panic(err)
-		return
 	}
 
 	fmt.Println("Environment", Configs.Environment)

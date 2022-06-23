@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httprate"
 	"net/http"
 	"strconv"
+	"time"
 	"user-auth/infra"
 	"user-auth/modules/user"
 )
@@ -34,6 +36,7 @@ func main() {
 
 	r.Use(GlobalMiddleware)
 	r.Use(middleware.Logger)
+	r.Use(httprate.LimitByIP(infra.Configs.MaxRequestsPerMinutePerIp, 1*time.Minute))
 	r.Route("/auth", func(r chi.Router) {
 		r.Post("/signup", user.SignUpHandler)
 		r.Post("/signin", user.SignInHandler)
